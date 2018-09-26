@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xjOrgan">
+
+	<!-- 查找组织机构 -->
+	<select id="queryXJOrgan" parameterType="java.util.HashMap"
+		resultMap="queryXJOrganResult" flushCache="true">
+		SELECT
+			GUID,
+			NAME,
+			PARENT_GUID,
+			PARENT_LEVEL
+		FROM
+			T_ORGANIZATION_R
+		ORDER BY
+			SORT_NO;
+	</select>
+	<resultMap type="com.aic.ssm.entity.SidebarTree" id="queryXJOrganResult">
+		<result property="guid" column="GUID" />
+		<result property="text" column="NAME" />
+		<result property="parent_guid" column="PARENT_GUID" />
+		<result property="parent_level" column="PARENT_LEVEL" />
+	</resultMap>
+	
+	<!-- 查找组织机构下的线路 -->
+	<select id="queryXJLineByOrgan" parameterType="java.util.HashMap"
+		resultMap="queryXJLineByOrganResult" flushCache="true">
+		SELECT 
+			  T_LINE_R_GUID
+		      ,T_LINE_R_NAME
+		      ,T_LINE_R_CONTENT_GUID
+		      ,T_ORGANIZATION_R_GUID
+		  FROM T_Line_Distribution
+		  WHERE
+		  	1=1
+		  <if test="t_organization_r_guid != null and t_organization_r_guid != ''">
+				AND T_ORGANIZATION_R_GUID = #{t_organization_r_guid}
+		  </if>
+	</select>
+	<resultMap type="com.aic.ssm.entity.SidebarTree" id="queryXJLineByOrganResult">
+		<result property="t_line_r_guid" column="T_LINE_R_GUID" />
+		<result property="guid" column="T_LINE_R_GUID" />
+		<result property="text" column="T_LINE_R_NAME" />
+		<result property="t_line_r_content_guid" column="T_LINE_R_CONTENT_GUID" />
+		<result property="t_organization_r_guid" column="T_ORGANIZATION_R_GUID" />
+	</resultMap>
+	
+	<!-- 查找线路下的设备 -->
+	<select id="queryXJDeviceByLine" parameterType="java.util.HashMap"
+		resultMap="queryXJDeviceByLineResult" flushCache="true">
+		SELECT 
+	      DEVNAME
+	      ,T_ORGANIZATION_R_GUID
+	      ,T_LINE_R_GUID
+	      ,T_DEVICE_R_GUID
+	  FROM T_DEVICE_DISTRIBUTION
+	  WHERE
+	  	1=1
+	  	  <if test="t_organization_r_guid != null and t_organization_r_guid != ''">
+				AND T_ORGANIZATION_R_GUID = #{t_organization_r_guid}
+		  </if>
+		  <if test="t_line_r_guid != null and t_line_r_guid != ''">
+				AND T_LINE_R_GUID = #{t_line_r_guid}
+		  </if>
+	</select>
+	<resultMap type="com.aic.ssm.entity.SidebarTree" id="queryXJDeviceByLineResult">
+		<result property="text" column="DEVNAME" />
+		<result property="t_organization_r_guid" column="T_ORGANIZATION_R_GUID" />
+		<result property="t_line_r_guid" column="T_LINE_R_GUID" />
+		<result property="guid" column="T_DEVICE_R_GUID" />
+		<result property="t_device_r_guid" column="T_DEVICE_R_GUID" />
+	</resultMap>
+	
+		<!-- 查找设备下的检测项 -->
+	<select id="queryXJItemByDevice" parameterType="java.util.HashMap"
+		resultMap="queryXJItemByDeviceResult" flushCache="true">
+		SELECT 
+	      CHNAME
+	      ,T_ITEM_R_GUID
+	      ,T_ORGANIZATION_R_GUID
+	      ,T_LINE_R_GUID
+	      ,T_DEVICE_R_GUID
+ 		FROM T_ITEM_DISTRIBUTION 
+ 		WHERE
+	    	1=1
+	  	  <if test="t_organization_r_guid != null and t_organization_r_guid != ''">
+				AND T_ORGANIZATION_R_GUID = #{t_organization_r_guid}
+		  </if>
+		  <if test="t_line_r_guid != null and t_line_r_guid != ''">
+				AND T_LINE_R_GUID = #{t_line_r_guid}
+		  </if>
+		  <if test="t_device_r_guid != null and t_device_r_guid != ''">
+				AND T_DEVICE_R_GUID = #{t_device_r_guid}
+		  </if>
+	</select>
+	<resultMap type="com.aic.ssm.entity.SidebarTree" id="queryXJItemByDeviceResult">
+		<result property="text" column="CHNAME" />
+		<result property="guid" column="T_ITEM_R_GUID" />
+		<result property="t_item_r_guid" column="T_ITEM_R_GUID" />
+		<result property="t_organization_r_guid" column="T_ORGANIZATION_R_GUID" />
+		<result property="t_line_r_guid" column="T_LINE_R_GUID" />
+		<result property="t_device_r_guid" column="T_DEVICE_R_GUID" />
+	</resultMap>
+	
+</mapper>
